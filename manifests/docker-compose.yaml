@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+
+
+  backend:
+    image: imohitbhatt/backend:0.3
+    container_name: backend
+    ports:
+      - "8000:8000"
+    networks:
+      - todo-list
+    depends_on:
+      - db
+      
+  frontend:
+    image: imohitbhatt/frontend:0.3
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    networks:
+      - todo-list
+    depends_on:
+      - backend
+      
+      
+  db:
+    image: postgres
+    restart: always
+    container_name: db
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PASSWORD: postgres-pwd
+      POSTGRES_USER: todo-list
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - todo-list
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+
+networks:
+  todo-list:
+
+volumes:
+  db-data:

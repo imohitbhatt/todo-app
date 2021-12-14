@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+  namespace: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-pod
+  template:
+    metadata:
+      labels:
+        app: backend-pod
+    spec:
+      containers:
+        - name: backend-container
+          image: imohitbhatt/backend:0.3
+          ports:
+            - containerPort: 8000
+            
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: backend-credentials
+                  key: user
+
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: backend-credentials
+                  key: password
+
+            - name: POSTGRES_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: backend-config
+                  key: host
+
+          volumeMounts:
+            - name: pv-backend
+              mountPath: var/lib/backend/data
+
+      volumes:
+        - name: pv-backend
+          persistentVolumeClaim:
+            claimName: backend-claim
+          

@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+  namespace: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend-pod
+  template:
+    metadata:
+      labels:
+        app: frontend-pod
+    spec:
+      containers:
+        - name: frontend-containers
+          image: imohitbhatt/frontend:0.3
+          ports:
+            - containerPort: 3000
+
+          volumeMounts:
+            - name: pv-frontend
+              mountPath: var/lib/frontend/data
+
+      volumes:
+        - name: pv-frontend
+          persistentVolumeClaim:
+            claimName: frontend-claim
+    
